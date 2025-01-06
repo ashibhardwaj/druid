@@ -391,7 +391,7 @@ public class GroupByQueryEngine
       if (delegate != null && delegate.hasNext()) {
         return true;
       } else {
-        if (!cursor.isDone() && granularizer.currentOffsetWithinBucket()) {
+        if (granularizer.currentOffsetWithinBucket()) {
           if (delegate != null) {
             delegate.close();
           }
@@ -877,6 +877,12 @@ public class GroupByQueryEngine
     public List<String> getDictionary()
     {
       return ImmutableList.of();
+    }
+
+    @Override
+    public Long getDictionarySize()
+    {
+      return 0L;
     }
 
     @Override

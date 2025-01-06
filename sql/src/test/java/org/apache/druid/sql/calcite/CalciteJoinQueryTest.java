@@ -39,6 +39,7 @@ import org.apache.druid.query.Druids;
 import org.apache.druid.query.FilteredDataSource;
 import org.apache.druid.query.GlobalTableDataSource;
 import org.apache.druid.query.InlineDataSource;
+import org.apache.druid.query.JoinAlgorithm;
 import org.apache.druid.query.JoinDataSource;
 import org.apache.druid.query.LookupDataSource;
 import org.apache.druid.query.Order;
@@ -145,7 +146,7 @@ public class CalciteJoinQueryTest extends BaseCalciteQueryTest
                                         .setInterval(querySegmentSpec(Filtration.eternity()))
                                         .setGranularity(Granularities.ALL)
                                         .setDataSource(new TableDataSource("numfoo"))
-                                        .setDimensions(new DefaultDimensionSpec("__time", "_d0", ColumnType.LONG))
+                                        .setDimensions(new DefaultDimensionSpec("__time", "d0", ColumnType.LONG))
                                         .setContext(context)
                                         .build()
                         ),
@@ -159,14 +160,15 @@ public class CalciteJoinQueryTest extends BaseCalciteQueryTest
                                         .build()
                         ),
                         "j0.",
-                        "(\"_d0\" == \"j0.d0\")",
+                        "(\"d0\" == \"j0.d0\")",
                         JoinType.INNER,
                         null,
                         ExprMacroTable.nil(),
-                        CalciteTests.createJoinableFactoryWrapper()
+                        CalciteTests.createJoinableFactoryWrapper(),
+                        JoinAlgorithm.BROADCAST
                     )
                 )
-                .columns("_d0")
+                .columns("d0")
                 .columnTypes(ColumnType.LONG)
                 .context(context)
                 .build()
@@ -200,7 +202,7 @@ public class CalciteJoinQueryTest extends BaseCalciteQueryTest
             new TopNQueryBuilder()
                 .intervals(querySegmentSpec(Filtration.eternity()))
                 .granularity(Granularities.ALL)
-                .dimension(new DefaultDimensionSpec("dim4", "_d0"))
+                .dimension(new DefaultDimensionSpec("dim4", "d0"))
                 .aggregators(new DoubleSumAggregatorFactory("a0", "m1"))
                 .metric(new DimensionTopNMetricSpec(null, StringComparators.LEXICOGRAPHIC))
                 .threshold(1)
@@ -213,16 +215,17 @@ public class CalciteJoinQueryTest extends BaseCalciteQueryTest
                                         .setGranularity(Granularities.ALL)
                                         .setDimFilter(not(equality("dim4", "a", ColumnType.STRING)))
                                         .setDataSource(new TableDataSource("numfoo"))
-                                        .setDimensions(new DefaultDimensionSpec("dim4", "_d0"))
+                                        .setDimensions(new DefaultDimensionSpec("dim4", "d0"))
                                         .setContext(context)
                                         .build()
                         ),
                         "j0.",
-                        "(\"dim4\" == \"j0._d0\")",
+                        "(\"dim4\" == \"j0.d0\")",
                         JoinType.INNER,
                         null,
                         ExprMacroTable.nil(),
-                        CalciteTests.createJoinableFactoryWrapper()
+                        CalciteTests.createJoinableFactoryWrapper(),
+                        JoinAlgorithm.BROADCAST
                     )
                 )
                 .context(context)
@@ -3624,7 +3627,8 @@ public class CalciteJoinQueryTest extends BaseCalciteQueryTest
                         JoinType.LEFT,
                         null,
                         ExprMacroTable.nil(),
-                        CalciteTests.createJoinableFactoryWrapper()
+                        CalciteTests.createJoinableFactoryWrapper(),
+                        JoinAlgorithm.BROADCAST
                     )
                 )
                 .setInterval(querySegmentSpec(Filtration.eternity()))
@@ -5264,7 +5268,7 @@ public class CalciteJoinQueryTest extends BaseCalciteQueryTest
                     )
                 )
                 .intervals(querySegmentSpec(Filtration.eternity()))
-                .dimension(new DefaultDimensionSpec("j0.dim4", "_d0", ColumnType.STRING))
+                .dimension(new DefaultDimensionSpec("j0.dim4", "d0", ColumnType.STRING))
                 .threshold(4)
                 .aggregators(aggregators(new CountAggregatorFactory("a0")))
                 .context(queryContext)
@@ -5305,7 +5309,7 @@ public class CalciteJoinQueryTest extends BaseCalciteQueryTest
                     )
                 )
                 .intervals(querySegmentSpec(Filtration.eternity()))
-                .dimension(new DefaultDimensionSpec("j0.dim4", "_d0", ColumnType.STRING))
+                .dimension(new DefaultDimensionSpec("j0.dim4", "d0", ColumnType.STRING))
                 .threshold(4)
                 .aggregators(aggregators(new CountAggregatorFactory("a0")))
                 .context(queryContext)
@@ -5725,7 +5729,8 @@ public class CalciteJoinQueryTest extends BaseCalciteQueryTest
                           JoinType.INNER,
                           null,
                           ExprMacroTable.nil(),
-                          CalciteTests.createJoinableFactoryWrapper()
+                          CalciteTests.createJoinableFactoryWrapper(),
+                          JoinAlgorithm.BROADCAST
                       )
                   )
                   .columns("l1")
@@ -5973,7 +5978,8 @@ public class CalciteJoinQueryTest extends BaseCalciteQueryTest
                         JoinType.INNER,
                         null,
                         ExprMacroTable.nil(),
-                        CalciteTests.createJoinableFactoryWrapper()
+                        CalciteTests.createJoinableFactoryWrapper(),
+                        JoinAlgorithm.BROADCAST
                     )
                 )
                 .columns("__time")
